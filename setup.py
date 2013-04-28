@@ -5,7 +5,8 @@ from setuptools import setup, find_packages
 
 from distutils.core import Extension
  
-module1 = Extension('dateutil', sources = ['src/module/dateutil.c'])
+#dateutil = Extension('dateutil', sources = ['src/module/dateutil.c'])
+fib = Extension('fib', sources = ['src/module/fib.c'])
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -26,5 +27,5 @@ setup(version='0.1',
       url='',
       packages=find_packages(),
       test_suite="tests",    
-      ext_modules = [module1],                      
+      ext_modules = [fib],                      
 )
