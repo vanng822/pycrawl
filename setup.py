@@ -21,7 +21,8 @@ requires = [
     'waitress',
     ]
 
-setup(version='0.1',
+setup(name='pycrawl',
+      version='0.1',
       author='',
       author_email='',
       url='',
