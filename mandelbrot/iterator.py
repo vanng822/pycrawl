@@ -1,13 +1,13 @@
 
-import sys, time
+import sys
 stdout = sys.stdout
 
 BAILOUT = 16
 MAX_ITERATIONS = 1000
 
 class Iterator:
+
   def __init__(self):
-    print 'Rendering...'
     for y in range(-39, 39):
       stdout.write('\n')
       for x in range(-39, 39):
@@ -18,7 +18,7 @@ class Iterator:
           stdout.write('*')
         else:
           stdout.write(' ')
-    
+
   def mandelbrot(self, x, y):
     cr = y - 0.5
     ci = x
@@ -38,10 +38,6 @@ class Iterator:
         return i
       if i > MAX_ITERATIONS:
         return 0
-
-t = time.time()
-Iterator()
-print '\nPython Elapsed %.02f' % (time.time() - t)
 
 
 

@@ -5,14 +5,14 @@ from setuptools import setup, find_packages
 
 from distutils.core import Extension
  
-#dateutil = Extension('dateutil', sources = ['src/module/dateutil.c'])
+cmandelbrot = Extension('cmandelbrot', sources = ['src/module/cmandelbrot.c'])
 fib = Extension('fib', sources = ['src/module/fib.c'])
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 
-requires = [
+install_requires = [
     'pyramid',
     'pyramid_debugtoolbar',
     'sqlalchemy',
@@ -28,5 +28,6 @@ setup(name='pycrawl',
       url='',
       packages=find_packages(),
       test_suite="tests",    
-      ext_modules = [fib],                      
+      ext_modules = [cmandelbrot, fib],
+      install_requires = install_requires,
 )
