@@ -171,7 +171,6 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 		int lunar_leap, int time_zone) {
 	int k, a11, b11, off, leap_off, leap_month, month_start;
 	int *res;
-	res = (int *)malloc(3 * sizeof(int));
 
 	if (lunar_month < 11) {
 		a11 = get_lunar_month11(lunar_year - 1, time_zone);
@@ -192,6 +191,7 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 			leap_month += 12;
 		}
 		if (lunar_leap != 0 && lunar_month != lunar_leap) {
+			res = (int *)malloc(3 * sizeof(int));
 			res[0] = 0;
 			res[1] = 0;
 			res[2] = 0;
@@ -202,7 +202,6 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 	}
 	month_start = get_new_moon_day(k + off, time_zone);
 	res = jd_to_date(month_start + lunar_day - 1);
-
 	return res;
 }
 /*
