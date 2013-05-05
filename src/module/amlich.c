@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -204,18 +203,4 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 	res = jd_to_date(month_start + lunar_day - 1);
 	return res;
 }
-/*
-int main() {
-	int dd, mm, yyyy, time_zone;
-	int * date;
-	dd = 10;
-	mm = 2;
-	yyyy = 2013;
-	time_zone = 7;
-	date = solar2lunar(dd, mm, yyyy, time_zone);
-	printf("%i", date[2]);
-	free(date);
-	return 0;
-}*/
-
 
