@@ -17,14 +17,8 @@ py_jd_to_date(PyObject *self, PyObject *args) {
 
 	int *res = jd_to_date(jd);
 
-	PyObject *date = PyList_New(3);
-
-	int i;
-	for (i = 0; i < 3; i++) {
-		PyList_SetItem(date, i, Py_BuildValue("i", res[i]));
-	}
+	PyObject *date = Py_BuildValue("[iii]", res[0], res[1], res[2]);
 	free(res);
-
 	return date;
 }
 static PyObject *
@@ -88,12 +82,7 @@ py_solar2lunar(PyObject *self, PyObject *args) {
 		return NULL;
 
 	int *res = solar2lunar(dd, mm, yyyy, time_zone);
-
-	PyObject *list = PyList_New(4);
-	int i;
-	for (i = 0; i < 4; i++) {
-		PyList_SetItem(list, i, Py_BuildValue("i", res[i]));
-	}
+	PyObject *list = Py_BuildValue("[iiii]", res[0], res[1], res[2], res[3]);
 	free(res);
 	return list;
 }
@@ -107,11 +96,7 @@ py_lunar2solar(PyObject *self, PyObject *args) {
 
 	int *res = lunar2solar(lunar_day, lunar_month, lunar_year, lunar_leap, time_zone);
 
-	PyObject *list = PyList_New(3);
-	int i;
-	for (i = 0; i < 3; i++) {
-		PyList_SetItem(list, i, Py_BuildValue("i", res[i]));
-	}
+	PyObject *list = Py_BuildValue("[iii]", res[0], res[1], res[2]);
 	free(res);
 	return list;
 }
