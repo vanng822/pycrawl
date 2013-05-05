@@ -39,7 +39,7 @@ int * jd_to_date(int jd) {
 	return date;
 }
 
-double newmoon(int k) {
+double new_moon(int k) {
 	double T, T2, T3, dr, Jd1, M, m_pr, F, C1, deltat, jd_new;
 	T = k / 1236.85; // Time in Julian centuries from 1900 January 0.5
 	T2 = T * T;
@@ -88,18 +88,18 @@ int get_sun_longitude(int jd, int time_zone) {
 	return (int) (sun_longitude(jd - 0.5 - time_zone / 24) / M_PI * 6);
 }
 
-int get_newmoon_day(int k, int time_zone) {
-	return (int) (newmoon(k) + 0.5 + time_zone / 24);
+int get_new_moon_day(int k, int time_zone) {
+	return (int) (new_moon(k) + 0.5 + time_zone / 24);
 }
 
 int get_lunar_month11(int yyyy, int time_zone) {
 	int k, off, nm, sun_long;
 	off = jd_from_date(31, 12, yyyy) - 2415021;
 	k = (int) (off / 29.530588853);
-	nm = get_newmoon_day(k, time_zone);
+	nm = get_new_moon_day(k, time_zone);
 	sun_long = get_sun_longitude(nm, time_zone); // sun longitude at local midnight
 	if (sun_long >= 9) {
-		nm = get_newmoon_day(k - 1, time_zone);
+		nm = get_new_moon_day(k - 1, time_zone);
 	}
 	return nm;
 }
@@ -109,11 +109,11 @@ int get_leap_month_offset(int a11, int time_zone) {
 	k = (int) ((a11 - 2415021.076998695) / 29.530588853 + 0.5);
 	last = 0;
 	i = 1; // We start with the month following lunar month 11
-	arc = get_sun_longitude(get_newmoon_day(k + i, time_zone), time_zone);
+	arc = get_sun_longitude(get_new_moon_day(k + i, time_zone), time_zone);
 	do {
 		last = arc;
 		i++;
-		arc = get_sun_longitude(get_newmoon_day(k + i, time_zone), time_zone);
+		arc = get_sun_longitude(get_new_moon_day(k + i, time_zone), time_zone);
 	} while (arc != last && i < 14);
 
 	return i - 1;
@@ -126,9 +126,9 @@ int * solar2lunar(int dd, int mm, int yyyy, int time_zone) {
 	day_number = jd_from_date(dd, mm, yyyy);
 
 	k = (int) ((day_number - 2415021.076998695) / 29.530588853);
-	month_start = get_newmoon_day(k + 1, time_zone);
+	month_start = get_new_moon_day(k + 1, time_zone);
 	if (month_start > day_number) {
-		month_start = get_newmoon_day(k, time_zone);
+		month_start = get_new_moon_day(k, time_zone);
 	}
 	a11 = get_lunar_month11(yyyy, time_zone);
 	b11 = a11;
@@ -200,7 +200,7 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 			off += 1;
 		}
 	}
-	month_start = get_newmoon_day(k + off, time_zone);
+	month_start = get_new_moon_day(k + off, time_zone);
 	res = jd_to_date(month_start + lunar_day - 1);
 
 	return res;
