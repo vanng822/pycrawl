@@ -11,7 +11,7 @@ class CalendarTest(unittest.TestCase):
         self.loop = 1000
     
     def test_amlich(self):
-        print 'test_string_replace'
+        print 'test_amlich'
         pr = cProfile.Profile()
         pr.enable()
         for i in range(1, self.loop):
@@ -26,7 +26,7 @@ class CalendarTest(unittest.TestCase):
         pr.print_stats()
         
     def test_camlich(self):
-        print 'test_string_replace'
+        print 'test_camlich'
         pr = cProfile.Profile()
         pr.enable()
         for i in range(1, self.loop):
