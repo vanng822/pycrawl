@@ -55,7 +55,7 @@ static PyObject* py_solar2lunar(PyObject* self, PyObject* args) {
 	list = (PyListObject *) Py_BuildValue("[]");
 	int i;
 	PyObject *i_new;
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 4; i++) {
 		i_new = (PyObject *) Py_BuildValue("i", r[i]);
 		PyList_Append(list, i_new);
 	}

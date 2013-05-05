@@ -18,10 +18,16 @@ class CalendarTest(unittest.TestCase):
             result = cal.amlich.S2L(4, 5, 2013, 7)
             result2 = cal.amlich.L2S(25, 3, 2013, 0, 7)
             
+        self.assertEqual(len(result2), 3)
+        self.assertEqual(len(result), 4)
         self.assertEqual(result[0], 25)
         self.assertEqual(result[1], 3)
+        self.assertEqual(result[2], 2013)
+        self.assertEqual(result[3], 0)
         self.assertEqual(result2[0], 4)
         self.assertEqual(result2[1], 5)
+        self.assertEqual(result2[2], 2013)
+        
         pr.disable()
         pr.print_stats()
         
@@ -32,9 +38,16 @@ class CalendarTest(unittest.TestCase):
         for i in range(1, self.loop):
             result = camlich.solar2lunar(4, 5, 2013, 7)
             result2 = camlich.lunar2solar(25, 3, 2013, 0, 7)
+        
+        
+        self.assertEqual(len(result2), 3)
+        self.assertEqual(len(result), 4)
         self.assertEqual(result[0], 25)
         self.assertEqual(result[1], 3)
+        self.assertEqual(result[2], 2013)
+        self.assertEqual(result[3], 0)
         self.assertEqual(result2[0], 4)
         self.assertEqual(result2[1], 5)
+        self.assertEqual(result2[2], 2013)
         pr.disable()
         pr.print_stats()
