@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <sys/time.h>
 
 int jd_from_date(int dd, int mm, int yyyy) {
 	int a, y, m, jd;
