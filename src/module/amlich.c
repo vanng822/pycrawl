@@ -1,6 +1,20 @@
 #include <stdlib.h>
 #include <math.h>
 
+typedef struct {
+	int day;
+	int month;
+	int year;
+} solar_date;
+
+
+typedef struct {
+	int day;
+	int month;
+	int year;
+	int leap;
+} lunar_date;
+
 int jd_from_date(int dd, int mm, int yyyy) {
 	int a, y, m, jd;
 	a = (int) ((14 - mm) / 12);
@@ -14,9 +28,11 @@ int jd_from_date(int dd, int mm, int yyyy) {
 	return jd;
 }
 
-int * jd_to_date(int jd) {
+solar_date *
+jd_to_date(int jd) {
 	int a, b, c, d, e, m, day, month, year;
-	int * date = (int *) malloc(3 * sizeof(int));
+	solar_date *date = (solar_date *) malloc(sizeof(solar_date));
+
 	if (jd > 2299160) { // After 5/10/1582, Gregorian calendar
 		a = jd + 32044;
 		b = (int) ((4 * a + 3) / 146097);
@@ -31,9 +47,9 @@ int * jd_to_date(int jd) {
 	day = e - (int) ((153 * m + 2) / 5) + 1;
 	month = m + 3 - 12 * (int) (m / 10);
 	year = b * 100 + d - 4800 + (int) (m / 10);
-	date[0] = day;
-	date[1] = month;
-	date[2] = year;
+	date->day = day;
+	date->month = month;
+	date->year = year;
 
 	return date;
 }
@@ -118,7 +134,8 @@ int get_leap_month_offset(int a11, int time_zone) {
 	return i - 1;
 }
 
-int * solar2lunar(int dd, int mm, int yyyy, int time_zone) {
+lunar_date *
+solar2lunar(int dd, int mm, int yyyy, int time_zone) {
 	int k, day_number, month_start, a11, b11, lunar_day, lunar_month, lunar_year,
 			lunar_leap, diff, leap_month_diff;
 
@@ -157,19 +174,20 @@ int * solar2lunar(int dd, int mm, int yyyy, int time_zone) {
 	if (lunar_month >= 11 && diff < 4) {
 		lunar_year -= 1;
 	}
-	int * res;
-	res = (int *)malloc(4 * sizeof(int));
-	res[0] = lunar_day;
-	res[1] = lunar_month;
-	res[2] = lunar_year;
-	res[3] = lunar_leap;
+	lunar_date * res;
+	res = (lunar_date *) malloc(sizeof(lunar_date));
+	res->day = lunar_day;
+	res->month = lunar_month;
+	res->year = lunar_year;
+	res->leap = lunar_leap;
 	return res;
 }
 
-int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
+solar_date *
+lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 		int lunar_leap, int time_zone) {
 	int k, a11, b11, off, leap_off, leap_month, month_start;
-	int *res;
+	solar_date *res;
 
 	if (lunar_month < 11) {
 		a11 = get_lunar_month11(lunar_year - 1, time_zone);
@@ -190,10 +208,10 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 			leap_month += 12;
 		}
 		if (lunar_leap != 0 && lunar_month != lunar_leap) {
-			res = (int *)malloc(3 * sizeof(int));
-			res[0] = 0;
-			res[1] = 0;
-			res[2] = 0;
+			res = (solar_date *)malloc(sizeof(solar_date));
+			res->day = 0;
+			res->month = 0;
+			res->year = 0;
 			return res;
 		} else if (lunar_leap != 0 || off >= leap_off) {
 			off += 1;
@@ -201,6 +219,7 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 	}
 	month_start = get_new_moon_day(k + off, time_zone);
 	res = jd_to_date(month_start + lunar_day - 1);
+
 	return res;
 }
 

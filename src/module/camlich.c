@@ -15,10 +15,10 @@ py_jd_to_date(PyObject *self, PyObject *args) {
 	if (!PyArg_ParseTuple(args, "i", &jd))
 		return NULL;
 
-	int *res = jd_to_date(jd);
+	solar_date *d = jd_to_date(jd);
 
-	PyObject *date = Py_BuildValue("[iii]", res[0], res[1], res[2]);
-	free(res);
+	PyObject *date = Py_BuildValue("[iii]", d->day, d->month, d->year);
+	free(d);
 	return date;
 }
 static PyObject *
@@ -81,9 +81,9 @@ py_solar2lunar(PyObject *self, PyObject *args) {
 	if (!PyArg_ParseTuple(args, "iiii", &dd, &mm, &yyyy, &time_zone))
 		return NULL;
 
-	int *res = solar2lunar(dd, mm, yyyy, time_zone);
-	PyObject *list = Py_BuildValue("[iiii]", res[0], res[1], res[2], res[3]);
-	free(res);
+	lunar_date *d = solar2lunar(dd, mm, yyyy, time_zone);
+	PyObject *list = Py_BuildValue("[iiii]", d->day, d->month, d->year, d->leap);
+	free(d);
 	return list;
 }
 static PyObject *
@@ -94,10 +94,10 @@ py_lunar2solar(PyObject *self, PyObject *args) {
 			&lunar_leap, &time_zone))
 		return NULL;
 
-	int *res = lunar2solar(lunar_day, lunar_month, lunar_year, lunar_leap, time_zone);
+	solar_date *d = lunar2solar(lunar_day, lunar_month, lunar_year, lunar_leap, time_zone);
 
-	PyObject *list = Py_BuildValue("[iii]", res[0], res[1], res[2]);
-	free(res);
+	PyObject *list = Py_BuildValue("[iii]", d->day, d->month, d->year);
+	free(d);
 	return list;
 }
 
