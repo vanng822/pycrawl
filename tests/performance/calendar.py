@@ -51,3 +51,26 @@ class CalendarTest(unittest.TestCase):
         self.assertEqual(result2[2], 2013)
         pr.disable()
         pr.print_stats()
+        
+    def test_cross_check(self):
+        dd = 4
+        mm = 5
+        yy = 2013
+        timeZone = 7
+        a11 = 24150210
+        lunarLeap = 0
+        k = 12321434
+        dayNumber = 14235435
+        jd = 14235435
+        self.assertEqual(cal.amlich.jdFromDate(dd, mm, yy), camlich.jd_from_date(dd, mm, yy))
+        self.assertEqual(cal.amlich.getLeapMonthOffset(a11, timeZone), camlich.get_leap_month_offset(a11, timeZone))
+        self.assertEqual(cal.amlich.getNewMoonDay(k, timeZone), camlich.get_new_moon_day(k, timeZone))
+        self.assertEqual(cal.amlich.getSunLongitude(dayNumber, timeZone), camlich.get_sun_longitude(dayNumber, timeZone))
+        self.assertEqual(cal.amlich.SunLongitude(jd), camlich.sun_longitude(jd))
+        self.assertListEqual(cal.amlich.jdToDate(jd), camlich.jd_to_date(jd))
+        self.assertListEqual(cal.amlich.S2L(dd, mm, yy, timeZone), camlich.solar2lunar(dd, mm, yy, timeZone))
+        self.assertListEqual(cal.amlich.L2S(dd, mm, yy, lunarLeap, timeZone), camlich.lunar2solar(dd, mm, yy, lunarLeap, timeZone))
+        
+        
+        
+        

@@ -3,19 +3,35 @@
 
 static PyObject *
 py_jd_from_date(PyObject *self, PyObject *args) {
-	int dd, mm, yy;
+	int dd, mm, yyyy;
+	if (!PyArg_ParseTuple(args, "iii", &dd, &mm, &yyyy))
+		return NULL;
 
-	return Py_BuildValue("i", jd_from_date(dd, mm, yy));
+	return Py_BuildValue("i", jd_from_date(dd, mm, yyyy));
 }
 static PyObject *
 py_jd_to_date(PyObject *self, PyObject *args) {
 	int jd;
+	if (!PyArg_ParseTuple(args, "i", &jd))
+		return NULL;
 
-	return Py_BuildValue("[items]", jd_to_date(jd));
+	int *res = jd_to_date(jd);
+
+	PyObject *date = PyList_New(3);
+
+	int i;
+	for (i = 0; i < 3; i++) {
+		PyList_SetItem(date, i, Py_BuildValue("i", res[i]));
+	}
+	free(res);
+
+	return date;
 }
 static PyObject *
 py_new_moon(PyObject *self, PyObject *args) {
 	int k;
+	if (!PyArg_ParseTuple(args, "i", &k))
+		return NULL;
 
 	return Py_BuildValue("d", new_moon(k));
 
@@ -24,29 +40,42 @@ static PyObject *
 py_sun_longitude(PyObject *self, PyObject *args) {
 	double jdn;
 
+	if (!PyArg_ParseTuple(args, "d", &jdn))
+		return NULL;
+
 	return Py_BuildValue("d", sun_longitude(jdn));
 }
 static PyObject *
 py_get_sun_longitude(PyObject *self, PyObject *args) {
 	int jd, time_zone;
 
+	if (!PyArg_ParseTuple(args, "ii", &jd, &time_zone))
+		return NULL;
+
 	return Py_BuildValue("i", get_sun_longitude(jd, time_zone));
 }
 static PyObject *
 py_get_new_moon_day(PyObject *self, PyObject *args) {
 	int k, time_zone;
+	if (!PyArg_ParseTuple(args, "ii", &k, &time_zone))
+		return NULL;
 
 	return Py_BuildValue("i", get_new_moon_day(k, time_zone));
 }
 static PyObject *
 py_get_lunar_month11(PyObject *self, PyObject *args) {
 	int yyyy, time_zone;
+	if (!PyArg_ParseTuple(args, "ii", &yyyy, &time_zone))
+		return NULL;
 
 	return Py_BuildValue("i", get_lunar_month11(yyyy, time_zone));
 }
 static PyObject *
 py_get_leap_month_offset(PyObject *self, PyObject *args) {
 	int a11, time_zone;
+
+	if (!PyArg_ParseTuple(args, "ii", &a11, &time_zone))
+		return NULL;
 
 	return Py_BuildValue("i", get_leap_month_offset(a11, time_zone));
 }
