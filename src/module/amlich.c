@@ -40,7 +40,7 @@ int * jd_to_date(int jd) {
 }
 
 double newmoon(int k) {
-	double T, T2, T3, dr, Jd1, M, Mpr, F, C1, deltat, JdNew;
+	double T, T2, T3, dr, Jd1, M, m_pr, F, C1, deltat, jd_new;
 	T = k / 1236.85; // Time in Julian centuries from 1900 January 0.5
 	T2 = T * T;
 	T3 = T2 * T;
@@ -48,24 +48,24 @@ double newmoon(int k) {
 	Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
 	Jd1 = Jd1 + 0.00033 * sin((166.56 + 132.87 * T - 0.009173 * T2) * dr); // Mean new moon
 	M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3; // Sun's mean anomaly
-	Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3; // Moon's mean anomaly
+	m_pr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3; // Moon's mean anomaly
 	F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3; // Moon's argument of latitude
 	C1 = (0.1734 - 0.000393 * T) * sin(M * dr) + 0.0021 * sin(2 * dr * M);
-	C1 = C1 - 0.4068 * sin(Mpr * dr) + 0.0161 * sin(dr * 2 * Mpr);
-	C1 = C1 - 0.0004 * sin(dr * 3 * Mpr);
-	C1 = C1 + 0.0104 * sin(dr * 2 * F) - 0.0051 * sin(dr * (M + Mpr));
-	C1 = C1 - 0.0074 * sin(dr * (M - Mpr)) + 0.0004 * sin(dr * (2 * F + M));
-	C1 = C1 - 0.0004 * sin(dr * (2 * F - M)) - 0.0006 * sin(dr * (2 * F + Mpr));
-	C1 = C1 + 0.0010 * sin(dr * (2 * F - Mpr))
-			+ 0.0005 * sin(dr * (2 * Mpr + M));
+	C1 = C1 - 0.4068 * sin(m_pr * dr) + 0.0161 * sin(dr * 2 * m_pr);
+	C1 = C1 - 0.0004 * sin(dr * 3 * m_pr);
+	C1 = C1 + 0.0104 * sin(dr * 2 * F) - 0.0051 * sin(dr * (M + m_pr));
+	C1 = C1 - 0.0074 * sin(dr * (M - m_pr)) + 0.0004 * sin(dr * (2 * F + M));
+	C1 = C1 - 0.0004 * sin(dr * (2 * F - M)) - 0.0006 * sin(dr * (2 * F + m_pr));
+	C1 = C1 + 0.0010 * sin(dr * (2 * F - m_pr))
+			+ 0.0005 * sin(dr * (2 * m_pr + M));
 	if (T < -11) {
 		deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3
 				- 0.000000081 * T * T3;
 	} else {
 		deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
 	};
-	JdNew = Jd1 + C1 - deltat;
-	return JdNew;
+	jd_new = Jd1 + C1 - deltat;
+	return jd_new;
 }
 
 double sun_longitude(double jdn) {
@@ -94,7 +94,6 @@ int get_newmoon_day(int k, int time_zone) {
 
 int get_lunar_month11(int yyyy, int time_zone) {
 	int k, off, nm, sun_long;
-	//off = jdFromDate(31, 12, yy) - 2415021.076998695;
 	off = jd_from_date(31, 12, yyyy) - 2415021;
 	k = (int) (off / 29.530588853);
 	nm = get_newmoon_day(k, time_zone);
@@ -121,57 +120,56 @@ int get_leap_month_offset(int a11, int time_zone) {
 }
 
 int * solar2lunar(int dd, int mm, int yyyy, int time_zone) {
-	int k, dayNumber, monthStart, a11, b11, lunarDay, lunarMonth, lunar_year,
-			lunarLeap, diff, leapMonthDiff;
+	int k, day_number, month_start, a11, b11, lunar_day, lunar_month, lunar_year,
+			lunar_leap, diff, leap_month_diff;
 
-	dayNumber = jd_from_date(dd, mm, yyyy);
+	day_number = jd_from_date(dd, mm, yyyy);
 
-	k = (int) ((dayNumber - 2415021.076998695) / 29.530588853);
-	monthStart = get_newmoon_day(k + 1, time_zone);
-	if (monthStart > dayNumber) {
-		monthStart = get_newmoon_day(k, time_zone);
+	k = (int) ((day_number - 2415021.076998695) / 29.530588853);
+	month_start = get_newmoon_day(k + 1, time_zone);
+	if (month_start > day_number) {
+		month_start = get_newmoon_day(k, time_zone);
 	}
-	//alert(dayNumber+" -> "+monthStart);
 	a11 = get_lunar_month11(yyyy, time_zone);
 	b11 = a11;
-	if (a11 >= monthStart) {
+	if (a11 >= month_start) {
 		lunar_year = yyyy;
 		a11 = get_lunar_month11(yyyy - 1, time_zone);
 	} else {
 		lunar_year = yyyy + 1;
 		b11 = get_lunar_month11(yyyy + 1, time_zone);
 	}
-	lunarDay = dayNumber - monthStart + 1;
-	diff = (int) ((monthStart - a11) / 29);
-	lunarLeap = 0;
-	lunarMonth = diff + 11;
+	lunar_day = day_number - month_start + 1;
+	diff = (int) ((month_start - a11) / 29);
+	lunar_leap = 0;
+	lunar_month = diff + 11;
 	if (b11 - a11 > 365) {
-		leapMonthDiff = get_leap_month_offset(a11, time_zone);
-		if (diff >= leapMonthDiff) {
-			lunarMonth = diff + 10;
-			if (diff == leapMonthDiff) {
-				lunarLeap = 1;
+		leap_month_diff = get_leap_month_offset(a11, time_zone);
+		if (diff >= leap_month_diff) {
+			lunar_month = diff + 10;
+			if (diff == leap_month_diff) {
+				lunar_leap = 1;
 			}
 		}
 	}
-	if (lunarMonth > 12) {
-		lunarMonth = lunarMonth - 12;
+	if (lunar_month > 12) {
+		lunar_month = lunar_month - 12;
 	}
-	if (lunarMonth >= 11 && diff < 4) {
+	if (lunar_month >= 11 && diff < 4) {
 		lunar_year -= 1;
 	}
 	int * res;
 	res = (int *)malloc(4 * sizeof(int));
-	res[0] = lunarDay;
-	res[1] = lunarMonth;
+	res[0] = lunar_day;
+	res[1] = lunar_month;
 	res[2] = lunar_year;
-	res[3] = lunarLeap;
+	res[3] = lunar_leap;
 	return res;
 }
 
 int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 		int lunar_leap, int time_zone) {
-	int k, a11, b11, off, leapOff, leapMonth, monthStart;
+	int k, a11, b11, off, leap_off, leap_month, month_start;
 	int *res;
 	res = (int *)malloc(3 * sizeof(int));
 
@@ -188,22 +186,22 @@ int * lunar2solar(int lunar_day, int lunar_month, int lunar_year,
 		off += 12;
 	}
 	if (b11 - a11 > 365) {
-		leapOff = get_leap_month_offset(a11, time_zone);
-		leapMonth = leapOff - 2;
-		if (leapMonth < 0) {
-			leapMonth += 12;
+		leap_off = get_leap_month_offset(a11, time_zone);
+		leap_month = leap_off - 2;
+		if (leap_month < 0) {
+			leap_month += 12;
 		}
 		if (lunar_leap != 0 && lunar_month != lunar_leap) {
 			res[0] = 0;
 			res[1] = 0;
 			res[2] = 0;
 			return res;
-		} else if (lunar_leap != 0 || off >= leapOff) {
+		} else if (lunar_leap != 0 || off >= leap_off) {
 			off += 1;
 		}
 	}
-	monthStart = get_newmoon_day(k + off, time_zone);
-	res = jd_to_date(monthStart + lunar_day - 1);
+	month_start = get_newmoon_day(k + off, time_zone);
+	res = jd_to_date(month_start + lunar_day - 1);
 
 	return res;
 }
@@ -217,6 +215,7 @@ int main() {
 	time_zone = 7;
 	date = solar2lunar(dd, mm, yyyy, time_zone);
 	printf("%i", date[2]);
+	free(date);
 	return 0;
 }*/
 
