@@ -103,17 +103,17 @@ py_lunar2solar(PyObject *self, PyObject *args) {
 
 static PyMethodDef
 methods[] = {
-		{"jd_from_date", py_jd_from_date, METH_VARARGS, "Lunar Calendar - jd_from_date" },
-		{"jd_to_date", py_jd_to_date, METH_VARARGS, "Lunar Calendar - jd_to_date" },
-		{"new_moon", py_new_moon, METH_VARARGS, "Lunar Calendar - new_moon" },
-		{"sun_longitude", py_sun_longitude, METH_VARARGS,"Lunar Calendar - sun_longitude" },
-		{"get_sun_longitude", py_get_sun_longitude, METH_VARARGS, "Lunar Calendar - get_sun_longitude" },
-		{"get_new_moon_day", py_get_new_moon_day, METH_VARARGS, "Lunar Calendar - get_new_moon_day" },
-		{"get_lunar_month11", py_get_lunar_month11, METH_VARARGS, "Lunar Calendar - get_lunar_month11" },
-		{"get_leap_month_offset", py_get_leap_month_offset, METH_VARARGS, "Lunar Calendar - get_leap_month_offset" },
-		{ "solar2lunar", py_solar2lunar, METH_VARARGS, "Lunar Calendar - solar2lunar" },
-		{ "lunar2solar", py_lunar2solar, METH_VARARGS, "Lunar Calendar - lunar2solar" },
-		{ NULL, NULL, 0, NULL }
+	{"jd_from_date", py_jd_from_date, METH_VARARGS, "Lunar Calendar - jd_from_date" },
+	{"jd_to_date", py_jd_to_date, METH_VARARGS, "Lunar Calendar - jd_to_date" },
+	{"new_moon", py_new_moon, METH_VARARGS, "Lunar Calendar - new_moon" },
+	{"sun_longitude", py_sun_longitude, METH_VARARGS,"Lunar Calendar - sun_longitude" },
+	{"get_sun_longitude", py_get_sun_longitude, METH_VARARGS, "Lunar Calendar - get_sun_longitude" },
+	{"get_new_moon_day", py_get_new_moon_day, METH_VARARGS, "Lunar Calendar - get_new_moon_day" },
+	{"get_lunar_month11", py_get_lunar_month11, METH_VARARGS, "Lunar Calendar - get_lunar_month11" },
+	{"get_leap_month_offset", py_get_leap_month_offset, METH_VARARGS, "Lunar Calendar - get_leap_month_offset" },
+	{ "solar2lunar", py_solar2lunar, METH_VARARGS, "Lunar Calendar - solar2lunar" },
+	{ "lunar2solar", py_lunar2solar, METH_VARARGS, "Lunar Calendar - lunar2solar" },
+	{ NULL, NULL, 0, NULL }
 };
 
 PyMODINIT_FUNC initcamlich(void) {
