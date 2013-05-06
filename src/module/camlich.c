@@ -1,3 +1,6 @@
+/**
+ * Please take a look on the note in amlich.c
+ */
 #include <Python.h>
 #include "amlich.c"
 

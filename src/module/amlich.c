@@ -1,3 +1,9 @@
+/**
+ * This code is converted from javascript version developed by Ho Ngoc Duc
+ * Where the license is for non-commercial use. If you want to use it for commercial purpose
+ * please contact the original author at
+ * http://www.informatik.uni-leipzig.de/~duc/amlich/
+ */
 #include <stdlib.h>
 #include <math.h>
 
