@@ -12,8 +12,8 @@ class FibTest(unittest.TestCase):
             return
         except Exception as e:
             self.fail("Got an unexpected exception %s" % type(e))
-            
+    
         self.fail("Shouldn't reach this point. Something is really wrong :-D")
         
-    def test_fib(self):
+    def test_fib_fibsfsdfd(self):
         self.assertEqual(fib.fib(10), 55)
