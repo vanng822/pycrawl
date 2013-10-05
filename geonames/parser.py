@@ -80,10 +80,7 @@ def process_worker(queue, callback):
             for index, field in enumerate(fields):
                 try:
                     # try to convert to the defined type, if failed convert to string
-                    if line[index]:
-                        data[field[0]] = field[1](line[index])
-                    else:
-                        data[field[0]] = unicode(line[index])
+                    data[field[0]] = field[1](line[index])
                 except:
                     data[field[0]] = unicode(line[index])
             

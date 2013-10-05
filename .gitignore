@@ -1,2 +1,5 @@
 python*
 pycrawl*
+*.so
+build
+*.pyc
