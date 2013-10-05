@@ -75,8 +75,7 @@ def process_worker(queue, callback):
 
 def main(args):
     q = Queue.Queue()
-    rt = threading.Thread(target=read_worker, args = (args.filename, q, ))
-    rt.start()
+   
     if args.callback is not None:
         callback = args.callback.split(':')
         if len(callback) == 2:
@@ -91,7 +90,10 @@ def main(args):
             raise Exception('Invalid callback')
     else:
         callback = None
-        
+   
+    rt = threading.Thread(target=read_worker, args = (args.filename, q, ))
+    rt.start()
+         
     for i in range(args.num_workers):
         t = threading.Thread(target = process_worker, args = (q, callback, ))
         t.start()
