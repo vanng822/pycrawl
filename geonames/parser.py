@@ -7,7 +7,7 @@ import Queue
 import codecs
 from datetime import date
 
-geoname_fields = [
+geoname_fields = (
     ('geonameid',int)         ,#: integer id of record in geonames database
     ('name', unicode)              ,#: name of geographical point (utf8) varchar(200)
     ('asciiname', unicode)         ,#: name of geographical point in plain ascii characters, varchar(200)
@@ -27,9 +27,9 @@ geoname_fields = [
     ('dem', int)               ,#: digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
     ('timezone', unicode) ,#: the timezone id (see file timeZone.txt) varchar(40)
     ('modification_date', date)
-]
+)
 
-zip_fields = [
+zip_fields = (
     ('country_code', unicode)      ,#: iso country code, 2 characters
     ('postal_code', unicode)       ,#: varchar(20)
     ('place_name', unicode)        ,#: varchar(180)
@@ -42,7 +42,7 @@ zip_fields = [
     ('latitude', float)          ,#: estimated latitude (wgs84)
     ('longitude', float)         ,#: estimated longitude (wgs84)
     ('accuracy', float)          #: accuracy of lat/lng from 1=estimated to 6=centroid
-]
+)
 
 def read_worker(filename, queue):
     print 'start read_worker'
