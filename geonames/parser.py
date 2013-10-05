@@ -74,8 +74,7 @@ def process_worker(queue, callback):
 
 
 def main(args):
-    q = Queue.Queue()
-   
+    
     if args.callback is not None:
         callback = args.callback.split(':')
         if len(callback) == 2:
@@ -91,6 +90,8 @@ def main(args):
     else:
         callback = None
    
+    q = Queue.Queue()
+   
     rt = threading.Thread(target=read_worker, args = (args.filename, q, ))
     rt.start()
          
@@ -100,13 +101,13 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Parsing geonames database text file. Make a callback with each row (dictionary) as argument')
     parser.add_argument('-f', '--filename', required=True,
-                   help='path to file containing cities')
+                   help='path to file containing geoname data. See http://download.geonames.org/export/dump/')
     parser.add_argument('-n', '--num_workers', required=False, type=int, default=10,
                    help='Number of workers. Default is 10')
     parser.add_argument('-c', '--callback', required=False, default=None,
-                   help='Function to process each row')
+                   help='Function to process each row, example geonames.indexer:es_index')
     args = parser.parse_args()
     
     main(args)
