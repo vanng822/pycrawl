@@ -5,7 +5,10 @@ import time
 import argparse
 import Queue
 import codecs
-from datetime import date
+from datetime import datetime
+
+def to_date(date_string):
+    return datetime.strptime(date_string, '%Y-%m-%d').date()
 
 geoname_fields = (
     ('geonameid',int)         ,#: integer id of record in geonames database
@@ -26,7 +29,7 @@ geoname_fields = (
     ('elevation', int)         ,#: in meters, integer
     ('dem', int)               ,#: digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
     ('timezone', unicode) ,#: the timezone id (see file timeZone.txt) varchar(40)
-    ('modification_date', date)
+    ('modification_date', to_date)
 )
 
 zip_fields = (
