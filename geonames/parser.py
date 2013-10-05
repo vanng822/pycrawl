@@ -5,27 +5,43 @@ import time
 import argparse
 import Queue
 import codecs
+from datetime import date
 
-fields = [
-    'geonameid'         ,#: integer id of record in geonames database
-    'name'              ,#: name of geographical point (utf8) varchar(200)
-    'asciiname'         ,#: name of geographical point in plain ascii characters, varchar(200)
-    'alternatenames'    ,#: alternatenames, comma separated varchar(5000)
-    'latitude'          ,#: latitude in decimal degrees (wgs84)
-    'longitude'         ,#: longitude in decimal degrees (wgs84)
-    'feature_class'     ,#: see http://www.geonames.org/export/codes.html, char(1)
-    'feature_code'      ,#: see http://www.geonames.org/export/codes.html, varchar(10)
-    'country_code'      ,#: ISO-3166 2-letter country code, 2 characters
-    'cc2'               ,#: alternate country codes, comma separated, ISO-3166 2-letter country code, 60 characters
-    'admin1_code'       ,#: fipscode (subject to change to iso code), see exceptions below, see file admin1Codes.txt for display names of this code; varchar(20)
-    'admin2_code'       ,#: code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80) 
-    'admin3_code'       ,#: code for third level administrative division, varchar(20)
-    'admin4_code'       ,#: code for fourth level administrative division, varchar(20)
-    'population'        ,#: bigint (8 byte int) 
-    'elevation'         ,#: in meters, integer
-    'dem'               ,#: digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
-    'timezone'          ,#: the timezone id (see file timeZone.txt) varchar(40)
-    'modification_date'
+geoname_fields = [
+    ('geonameid',int)         ,#: integer id of record in geonames database
+    ('name', unicode)              ,#: name of geographical point (utf8) varchar(200)
+    ('asciiname', unicode)         ,#: name of geographical point in plain ascii characters, varchar(200)
+    ('alternatenames', unicode)    ,#: alternatenames, comma separated varchar(5000)
+    ('latitude', float)          ,#: latitude in decimal degrees (wgs84)
+    ('longitude', float)         ,#: longitude in decimal degrees (wgs84)
+    ('feature_class', unicode)     ,#: see http://www.geonames.org/export/codes.html, char(1)
+    ('feature_code', unicode)      ,#: see http://www.geonames.org/export/codes.html, varchar(10)
+    ('country_code', unicode)      ,#: ISO-3166 2-letter country code, 2 characters
+    ('cc2', unicode)              ,#: alternate country codes, comma separated, ISO-3166 2-letter country code, 60 characters
+    ('admin1_code', unicode)       ,#: fipscode (subject to change to iso code), see exceptions below, see file admin1Codes.txt for display names of this code; varchar(20)
+    ('admin2_code', unicode)       ,#: code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80) 
+    ('admin3_code', unicode)       ,#: code for third level administrative division, varchar(20)
+    ('admin4_code', unicode)       ,#: code for fourth level administrative division, varchar(20)
+    ('population', int)        ,#: bigint (8 byte int) 
+    ('elevation', int)         ,#: in meters, integer
+    ('dem', int)               ,#: digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
+    ('timezone', unicode) ,#: the timezone id (see file timeZone.txt) varchar(40)
+    ('modification_date', date)
+]
+
+zip_fields = [
+    ('country_code', unicode)      ,#: iso country code, 2 characters
+    ('postal_code', unicode)       ,#: varchar(20)
+    ('place_name', unicode)        ,#: varchar(180)
+    ('admin_name1', unicode)       ,#: 1. order subdivision (state) varchar(100)
+    ('admin_code1', unicode)       ,#: 1. order subdivision (state) varchar(20)
+    ('admin_name2', unicode)       ,#: 2. order subdivision (county/province) varchar(100)
+    ('admin_code2', unicode)       ,#: 2. order subdivision (county/province) varchar(20)
+    ('admin_name3', unicode)       ,#: 3. order subdivision (community) varchar(100)
+    ('admin_code3', unicode)       ,#: 3. order subdivision (community) varchar(20)
+    ('latitude', float)          ,#: estimated latitude (wgs84)
+    ('longitude', float)         ,#: estimated longitude (wgs84)
+    ('accuracy', float)          #: accuracy of lat/lng from 1=estimated to 6=centroid
 ]
 
 def read_worker(filename, queue):
@@ -46,18 +62,30 @@ def process_worker(queue, callback):
     q_full = True
     tries = 1
     max_tries = 3
+    fields = None
     while q_full:
         try:
             line = queue.get(True, timeout=1)
             line = line.strip()
             line = line.split("\t")
-            if len(line) != len(fields):
-                print 'line error'
-                continue
-            
+            if fields is None:
+                if len(line) == len(geoname_fields):
+                    fields = geoname_fields
+                elif len(line) == len(zip_fields):
+                    fields = zip_fields
+                else:
+                    raise Exception('Not supported geoname data')
+                
             data = {}
             for index, field in enumerate(fields):
-                data[field] = unicode(line[index])
+                try:
+                    # try to convert to the defined type, if failed convert to string
+                    if line[index]:
+                        data[field[0]] = field[1](line[index])
+                    else:
+                        data[field[0]] = unicode(line[index])
+                except:
+                    data[field[0]] = unicode(line[index])
             
             if callback:
                 callback(data)
