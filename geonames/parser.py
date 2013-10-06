@@ -6,6 +6,7 @@ import argparse
 import Queue
 import codecs
 from datetime import datetime
+import signal, sys
 
 def to_date(date_string):
     return datetime.strptime(date_string, '%Y-%m-%d').date()
@@ -47,26 +48,58 @@ zip_fields = (
     ('accuracy', float)          #: accuracy of lat/lng from 1=estimated to 6=centroid
 )
 
-def read_worker(filename, queue):
+def read_worker(filename, queue, start_line, stop_signal, read_done, process_start_signal):
     print 'start read_worker'
     fp = codecs.open(filename, "r", "utf-8")
     if not fp:
         raise Exception('Could not open file')
     
+    start_line = max(0, start_line)
+    ignore_count = 0
     line = fp.readline()
-    while line != '':
-        queue.put_nowait(line)
+    while line != '' and ignore_count < start_line:
+        if stop_signal.isSet():
+            return
         line = fp.readline()
-
-def process_worker(queue, callback):
+        ignore_count += 1
+        
+    process_start_signal.set()
+    while line != '':
+        while True:
+            ## strange when thing messed up
+            if stop_signal.isSet():
+                return
+            try:
+                queue.put_nowait(line)
+            except Queue.Full:
+                #print 'q full'
+                if queue.qsize() > 1000:
+                    time.sleep(0.01)
+            except:
+                raise
+            
+        line = fp.readline()
+            
+    print 'Read done'
+    read_done.set()
+    
+def process_worker(queue, callback, stop_signal, read_done, process_start_signal):
     print 'start process_worker'
-    ## give read worker sometimes to build up the queue
-    time.sleep(0.5)
     q_full = True
-    tries = 1
+    retries = 1
     max_tries = 3
     fields = None
+    
+    ## waiting for start signal
+    while not process_start_signal.isSet():
+        if stop_signal.isSet():
+            return
+        time.sleep(0.1)
+    
+    print 'process_worker start working'
     while q_full:
+        if stop_signal.isSet():
+            return
         try:
             line = queue.get(True, timeout=1)
             line = line.strip()
@@ -88,18 +121,32 @@ def process_worker(queue, callback):
                     data[field[0]] = unicode(line[index])
             
             if callback:
-                callback(data)
+                try:
+                    callback(data)
+                except Exception as e:
+                    print e
             else:
                 print 'No callback. Printing data'
                 print data
         except Queue.Empty:
             print 'q empty'
-            if tries > max_tries:
+            ## keep retry in case reader temporary after
+            if read_done.isSet():
+                print 'Read was done'
+                q_full = False
+            elif retries > max_tries:
+                print 'Too many retries'
                 q_full = False
             else:
-                tries += 1
-                time.sleep(1)
+                retries += 1
+                time.sleep(0.3)
+        
 
+def threads_alive(threads):
+    for t in threads:
+        if t.isAlive():
+            return True
+    return False
 
 def main(args):
     
@@ -117,16 +164,30 @@ def main(args):
             raise Exception('Invalid callback')
     else:
         callback = None
-   
-    q = Queue.Queue()
-   
-    rt = threading.Thread(target=read_worker, args = (args.filename, q, ))
-    rt.start()
-         
-    for i in range(args.num_workers):
-        t = threading.Thread(target = process_worker, args = (q, callback, ))
-        t.start()
 
+    stop_signal = threading.Event()
+    read_done = threading.Event()
+    process_start_signal = threading.Event()
+    
+    q = Queue.Queue(5000)
+    
+    rt = threading.Thread(target=read_worker, args = (args.filename, q, args.start_line, stop_signal, read_done, process_start_signal, ))
+    rt.start()
+    ## give read worker sometimes to build up the queue
+    time.sleep(1)
+    threads = []
+    
+    for i in range(args.num_workers):
+        t = threading.Thread(target = process_worker, args = (q, callback, stop_signal, read_done, process_start_signal, ))
+        t.start()
+        threads.append(t)
+        
+    try:
+        while threads_alive(threads):
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        stop_signal.set()
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parsing geonames database text file. Make a callback with each row (dictionary) as argument')
@@ -134,6 +195,9 @@ if __name__ == '__main__':
                    help='path to file containing geoname data. See http://download.geonames.org/export/dump/')
     parser.add_argument('-n', '--num_workers', required=False, type=int, default=10,
                    help='Number of workers. Default is 10')
+    parser.add_argument('-s', '--start_line', required=False, type=int, default=0,
+                   help='Number of workers. Default is 10')
+    
     parser.add_argument('-c', '--callback', required=False, default=None,
                    help='Function to process each row, example geonames.indexer:es_index')
     args = parser.parse_args()
