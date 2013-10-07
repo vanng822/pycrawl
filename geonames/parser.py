@@ -65,18 +65,9 @@ def read_worker(filename, queue, start_line, stop_signal, read_done, process_sta
         
     process_start_signal.set()
     while line != '':
-        while True:
-            ## strange when thing messed up
-            if stop_signal.isSet():
-                return
-            try:
-                queue.put_nowait(line)
-            except Queue.Full:
-                #print 'q full'
-                if queue.qsize() > 1000:
-                    time.sleep(0.01)
-            except:
-                raise
+        if stop_signal.isSet():
+            return
+        queue.put(line, True)
             
         line = fp.readline()
             
