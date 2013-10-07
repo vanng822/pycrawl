@@ -160,7 +160,7 @@ def main(args):
     read_done = threading.Event()
     process_start_signal = threading.Event()
     
-    q = Queue.Queue(5000)
+    q = Queue.Queue(10000)
     
     rt = threading.Thread(target=read_worker, args = (args.filename, q, args.start_line, stop_signal, read_done, process_start_signal, ))
     rt.start()
