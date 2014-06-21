@@ -43,9 +43,9 @@ def get_midpoint(list points):
         y += cos(lat) * sin(lng)
         z += sin(lat)
         
-    x = x / plen
-    y = y / plen
-    z = z / plen
+    x /= plen
+    y /= plen
+    z /= plen
     
     return {'lat': to_degrees(atan2(z, sqrt(x * x + y * y))), 'lng': to_degrees(atan2(y, x))}
 
@@ -75,6 +75,6 @@ def get_bounding_box(double lat, double lng, double distance):
         
     return [
         {'lat': to_degrees(min_lat), 'lng': to_degrees(min_lng)},
-        {'lat': to_degrees(max_lat), 'lng': to_degrees(max_lng)},
+        {'lat': to_degrees(max_lat), 'lng': to_degrees(max_lng)}
     ]
 
