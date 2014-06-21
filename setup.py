@@ -14,6 +14,7 @@ dateutil = Extension('dateutil', sources = ['src/module/cdate_util.c'])
 cyiterator = Extension('cyiterator', ['mandelbrot/iterator.pyx'])
 
 gps_util = Extension('gps_util', ['gps_util/gps_util.pyx'])
+geohash = Extension('geohash', ['gps_util/geohash.pyx'])
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -35,5 +36,5 @@ setup(name='pycrawl',
       packages=find_packages(),
       test_suite="tests",
       cmdclass = {'build_ext': build_ext},
-      ext_modules = [gps_util, cmandelbrot, fib, camlich, dateutil, cyiterator],
+      ext_modules = [gps_util, geohash, cmandelbrot, fib, camlich, dateutil, cyiterator],
 )
