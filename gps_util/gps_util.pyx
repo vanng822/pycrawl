@@ -24,6 +24,14 @@ cdef double to_rad(double dec_degrees):
 cdef double to_degrees(double radians):
     return (180 * radians) / M_PI
 
+def get_distance(double lat1, double lng1, double lat2, double lng2):
+    cdef double delta_lat = to_rad(lat2 - lat1)
+    cdef double delta_lng = to_rad(lng2 - lng1)
+    cdef double a
+    
+    a = sin(delta_lat / 2) ** 2 +  cos(to_rad(lat1)) * cos(to_rad(lat2)) * sin(delta_lng / 2) ** 2
+    return (2 * atan2(sqrt(a), sqrt(1 - a))) * EARTH_RADIUS
+
 def get_midpoint(list points):
     cdef int plen = len(points)
     

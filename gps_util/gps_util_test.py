@@ -27,3 +27,7 @@ assert True == (abs(result['lng'] - 17.3) < 0.01)
 
 result = gps_util.get_bounding_box(2.333, 1.000, 20000)
 print result
+
+result = gps_util.get_distance(59.19305333867669, 17.661922238767147, 59.192982176318765, 17.662122901529074)
+print result
+assert result == 13.899604253423052
