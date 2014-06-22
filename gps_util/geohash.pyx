@@ -47,13 +47,13 @@ def decode(hash):
 		for bit in range(4, -1, -1):
 			if even == 1:
 				mid = (max_lng + min_lng) / 2
-				if (((hash_pos >> bit) & 1) == 1):
+				if ((hash_pos >> bit) & 1) == 1:
 					min_lng = mid
 				else:
 					max_lng = mid
 			else:
 				mid = (max_lat + min_lat) / 2
-				if (((hash_pos >> bit) & 1) == 1):
+				if ((hash_pos >> bit) & 1) == 1:
 					min_lat = mid
 				else:
 					max_lat = mid
