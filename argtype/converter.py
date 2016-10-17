@@ -15,12 +15,13 @@ def argtype_converter(**vartypes):
 
         def bool_converter(value):
             """ Special boolean handling for our case
+                (True, true, 1, False, false, 0)
             """
             if value in (False, 'False', 'false', 0, '0'):
                 return False
             elif value in (True, 'True', 'true', 1, '1'):
                 return True
-            return value
+            raise ValueError('Not recognize boolean value')
 
         def convert(value, vartype):
             if vartype is bool:
